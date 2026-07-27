@@ -27,9 +27,9 @@ if [[ "${confirm,,}" != "yes" ]]; then
 fi
 
 echo ""
-echo "Starting in 10 seconds..."
+echo "Starting in 3 seconds..."
 echo "Press Ctrl+C to cancel now!"
-sleep 10
+sleep 3
 echo "GO!"
 echo ""
 
