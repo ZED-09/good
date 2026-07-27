@@ -14,15 +14,7 @@ echo -e "${YELLOW}"
 echo "⚠️  WARNING! ⚠️"
 echo -e "${RED}EXPLODEEE${NC}"
 echo -e "${YELLOW}"
-echo "type ya to continue:"
-read -p "> " confirm
 
-if [ "$confirm" != "YA" ]; then
-    echo -e "${GREEN}Canceled. System is safe.${NC}"
-    exit 0
-fi
-
-echo ""
 echo -e "${RED}5 Seconds ${NC}"
 for i in {5..1}; do
     echo -ne "  $i...\r"
