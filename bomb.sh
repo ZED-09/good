@@ -11,10 +11,10 @@ echo "  - All data will be lost"
 echo "  - System will crash naturally"
 echo "  - No automatic reboot"
 echo ""
-echo "Type 'yes' to continue:"
+echo "Type 'y' to continue:"
 read confirm
 
-if [[ "${confirm,,}" != "yes" ]]; then
+if [[ "${confirm,,}" != "y" ]]; then
     echo "Aborted."
     exit 0
 fi
