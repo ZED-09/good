@@ -18,10 +18,10 @@ echo "  - Requires full reinstall from USB/DVD"
 echo ""
 echo "THIS IS FOR PHYSICAL PC LAB RESEARCH ONLY!"
 echo ""
-echo "Type 'YES' to continue:"
+echo "Type 'y' to continue:"
 read confirm
 
-if [[ "${confirm,,}" != "yes" ]]; then
+if [[ "${confirm,,}" != "y" ]]; then
     echo "Aborted."
     exit 0
 fi
