@@ -1,9 +1,7 @@
 #!/bin/bash
-# ============================================================
 # DISK DESTROYER - MASSIVE STORAGE FILLER
 # FOR LAB RESEARCH ON PHYSICAL HARDWARE ONLY!
 # THIS WILL DESTROY THE SYSTEM COMPLETELY!
-# ============================================================
 
 echo "============================================================"
 echo "  DISK DESTROYER - MASSIVE STORAGE FILLER"
